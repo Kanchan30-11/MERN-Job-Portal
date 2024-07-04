@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.bgLogin{
+    background-image: url("../src/assets/login2.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+  
+    width: 100vw;
+  }
