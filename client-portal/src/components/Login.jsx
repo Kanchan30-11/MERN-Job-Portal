@@ -1,26 +1,36 @@
 import React, { useState } from "react";
-import { GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import google from "../assets/google2.png";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-
+import { auth } from "../firebase/firebaseConfig";
+import { toast } from "react-toastify";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useAuth();
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
-      navigate("/"); // Navigate to home page on successful login
+      await signInWithEmailAndPassword(auth, email, password);
+      console.log("User Logged in Successfully");
+      navigate("/");
+      toast.success("User Logged in Successfully", {
+        position: "top-center",
+      });
+      toast.dismiss();
     } catch (error) {
-      console.error("Failed to log in:", error);
+      console.log(error.message);
+      toast.error(error.message, { position: "bottom-center" });
     }
   };
 
+  const handlecreatebtn = () => {
+    console.log("Navigating to login page");
+    navigate("/");
+  };
   const handleLogin = () => {
     const auth = getAuth();
     const googleProvider = new GoogleAuthProvider();

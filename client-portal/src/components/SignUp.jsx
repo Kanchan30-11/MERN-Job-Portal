@@ -1,26 +1,49 @@
 import React,{useState} from "react";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth,db } from "../firebase/firebaseConfig";
 import { getAuth } from "firebase/auth";
 import google from "../assets/google2.png";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import { setDoc,doc } from 'firebase/firestore';
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signup } = useAuth();
   const [name, setName] = useState("");
   const navigate = useNavigate();
   
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await signup(email, password);
+ 
+
+   const handleSignUp = async (e) => {
+       e.preventDefault();
+       try {
+      await  createUserWithEmailAndPassword(auth,email,password);
+      const user = auth.currentUser;
+      console.log(user);
+      if(user){
+        await setDoc(doc(db, "Users", user.uid), {
+          email:user.email,
+          fullname:name
+         
+        });
+       
+      }
+      console.log("User Registered Successfully");
+      toast.success("User Registered Successfully!!",{
+        position: "top-center",
+      })
+      toast.dismiss();
       navigate("/");
-    } catch (error) {
-      console.error("Failed to sign up:", error);
-    }
+       } catch (error) {
+        console.log(error.message)
+        toast.error(error.message),{
+          position: "bottom-center",
+          
+        }
+       }
+ 
   };
   const handleBack = () => {
     navigate("/");
@@ -28,6 +51,7 @@ const SignUp = () => {
 
   const auth = getAuth();
   const googleProvider = new GoogleAuthProvider();
+
   const handleLogin = () => {
     signInWithPopup(auth, googleProvider)
       .then((result) => {
@@ -46,7 +70,7 @@ const SignUp = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="h-screen bgLogin ">
+    <form onSubmit={handleSignUp} className="h-screen bgLogin ">
       <div className="p-4 ">
         <button
           onClick={handleBack}

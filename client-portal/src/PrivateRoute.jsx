@@ -1,13 +1,18 @@
-// src/components/PrivateRoute.jsx
-
+// ProtectedRoute.js
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { Navigate } from 'react-router-dom';
+import { auth } from './firebase/firebaseConfig';
 
-const PrivateRoute = ({ children }) => {
-const token= localStorage.getItem('token');
+const ProtectedRoute = ({ children }) => {
+  const user = auth.currentUser;
 
-  return(token?<Outlet/> : <Navigate to="/login" />) ;
+  if (!user) {
+    // Redirect to login if not authenticated
+    return <Navigate to="/login" />;
+  }
+
+  // Render the requested component if authenticated
+  return children;
 };
 
-export default PrivateRoute;
+export default ProtectedRoute;
