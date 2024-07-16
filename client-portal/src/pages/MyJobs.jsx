@@ -140,7 +140,7 @@ const MyJobs = () => {
                   </tr>
                 </thead>
                 {
-                  isLoading?(<div className="flex items-center justify-center h-20"><p>Loading....</p></div>):( <tbody>
+                  isLoading?(<h4 className="flex items-center justify-center h-20"><p>Loading....</p></h4>):( <tbody>
                     {
                       currentJobs.map((job, index)=>(
                         <tr key={index}>

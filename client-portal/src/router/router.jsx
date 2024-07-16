@@ -9,6 +9,7 @@ import Login from '../components/Login';
 import JobDetails from '../pages/JobDetails';
 import SignUp from '../components/SignUp';
 import PrivateRoute from '../PrivateRoute';
+import UserProfile from '../pages/UserProfile';
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,11 @@ const router = createBrowserRouter([
         path: '/job/:id',
         element: <JobDetails />,
       },
+      {
+        path: '/userProfile',
+        element: (
+          <PrivateRoute><UserProfile/></PrivateRoute>),
+      }
     ],
   },
   {

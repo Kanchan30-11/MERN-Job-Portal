@@ -1,46 +1,52 @@
 import React, { useState } from "react";
-import { GoogleAuthProvider, signInWithPopup, getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import google from "../assets/google2.png";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase/firebaseConfig";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log("User Logged in Successfully");
-      navigate("/");
+
       toast.success("User Logged in Successfully", {
         position: "top-center",
       });
-      toast.dismiss();
+
+      navigate("/");
     } catch (error) {
       console.log(error.message);
-      toast.error(error.message, { position: "bottom-center" });
+      toast.error("Error: " + error.message, { position: "bottom-center" });
+      setIsSubmitting(false); // Re-enable the button in case of error
     }
   };
 
-  const handlecreatebtn = () => {
-    console.log("Navigating to login page");
-    navigate("/");
-  };
   const handleLogin = () => {
-    const auth = getAuth();
     const googleProvider = new GoogleAuthProvider();
     signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
+        toast.success("Google Login Successful", {
+          position: "top-center",
+        });
         navigate("/"); // Navigate to home page on successful Google login
       })
       .catch((error) => {
         console.error("Error during Google login:", error);
+        toast.error("Error: " + error.message, { position: "bottom-center" });
+        setIsSubmitting(false); // Re-enable the button in case of error
       });
   };
 
@@ -50,6 +56,7 @@ const Login = () => {
 
   return (
     <form onSubmit={handleSubmit} className="h-screen bgLogin">
+      <ToastContainer />
       <div className="p-4">
         <button
           type="button"
@@ -89,14 +96,16 @@ const Login = () => {
           <button
             type="submit"
             className="text-white bg-blue-500 hover:bg-blue-600 w-full font-semibold lg:px-20 py-2 rounded outline-none focus:outline-none mb-1 ease-linear transition-all duration-150"
+            disabled={isSubmitting}
           >
-            Login
+            {isSubmitting ? 'Logging in...' : 'Login'}
           </button>
           <p>or</p>
           <button
             type="button"
             onClick={handleLogin}
             className="text-black font-semibold lg:px-20 py-2 rounded border border-gray-600 focus:outline-1 mb-1 ease-linear transition-all duration-150 w-full flex items-center justify-center gap-2"
+            disabled={isSubmitting}
           >
             <img src={google} className="w-6 h-6" alt="Google" />
             Google

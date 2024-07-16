@@ -1,18 +1,27 @@
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import Navbar from './components/Navbar'
 import { Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { auth } from './firebase/firebaseConfig';
 
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser]= useState();
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      console.log(user);
+    });
 
+    return () => unsubscribe();
+  }, []);
   return (
     <>
     <Navbar/>
-    <Outlet/>
     <ToastContainer/>
+    <Outlet/>
+    
     </>
   )
 }
